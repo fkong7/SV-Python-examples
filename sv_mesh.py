@@ -213,9 +213,12 @@ def boundary_layer(name, fn, args, bl_ops, fns_out):
     return msh
 
 if __name__ == '__main__':
-    solid_fn = '/Users/fanweikong/SV-Python-examples/cylinder.vtp'
-    mesh_fn = '/Users/fanweikong/SV-Python-examples/cylinder.vtu'
-    out_dir = '/Users/fanweikong/Documents/test'
+    solid_fn = os.path.join(os.path.dirname(__file__), 'cylinder.vtp')
+    mesh_fn = os.path.join(os.path.dirname(__file__), 'cylinder.vtu')
+    out_dir = os.path.join(os.path.dirname(__file__), 'test')
+    try:
+        os.makedirs(out_dir)
+    except Exception as e: print(e)
     
     print("*********mesh kernel*********")
     test_kernel('TetGen')

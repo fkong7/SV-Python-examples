@@ -172,9 +172,9 @@ def local_size_function(name, fn, global_edge_size, local_edge_size_list, fns_ou
 
 
 
-solid_fn = '/Users/fanweikong/Downloads/SVDemoProject/Models/demo.vtp'
-mesh_fn = '/Users/fanweikong/Downloads/SVDemoProject/Meshes/demo_test.vtu'
-out_dir = '/Users/fanweikong/Downloads/SVDemoProject/test'
+solid_fn = os.path.join(os.path.dirname(__file__), 'demo.vtp')
+out_dir = os.path.join(os.path.dirname(__file__), 'test')
+
 MeshObject.SetKernel('TetGen')
 Solid.SetKernel('PolyData')
 try:

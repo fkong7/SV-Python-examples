@@ -183,7 +183,10 @@ def boolean_ops(mode, fn):
 
 if __name__ == '__main__':
     
-    fn_dir = '/Users/fanweikong/Documents/test'
+    fn_dir = os.path.join(os.path.dirname(__file__), 'test')
+    try:
+        os.makedirs(fn_dir)
+    except Exception as e: print(e)
     
     #Kernels
 
