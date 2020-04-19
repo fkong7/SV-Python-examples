@@ -30,9 +30,20 @@
 # 
 # SV Python API Testing Script
 # Author: Fanwei Kong (fanwei_kong@berkeley.edu)
-
+import os
 from sv import *
 def geom_local_constrain_smooth():
+    out_dir = os.path.join(os.path.dirname(__file__), 'test')
+    try:
+        os.makedirs(out_dir)
+    except Exception as e: print(e)
+    objs = Repository.List()
+    for name in objs:
+        try:
+            Repository.Delete(name)
+        except Exception as e: print(e)
+    
+    # create geometry: two intersected cylinders
     Solid.SetKernel('PolyData')
     cyl_1 = Solid.pySolidModel()
     cyl_1.Cylinder('cyl',1.,10.,[0,0,0],[0,0,1])
@@ -44,18 +55,20 @@ def geom_local_constrain_smooth():
     union.GetBoundaryFaces(90)
     union.GetPolyData('poly1', 2)
     
+    # face remeshing
     MeshUtil.Remesh('poly1', 'poly2', 0.3, 0.4)
     MeshUtil.Remesh('poly2', 'poly3', 0.3, 0.4)
-    output_1 = '/Users/fanweikong/Downloads/cyl.vtk'
-    Repository.WriteVtkPolyData('poly3', 'ascii', output_1)
+    output_1 = os.path.join(out_dir, 'cyl.vtk')
     
-
-    Geom.Set_array_for_local_op_sphere('poly3', 'smth', 3, [0,0,0])
-    print("ok")
-    Geom.Local_constrain_smooth('smth', 'smth2', 5, 0.8)
-    print("ok")
-    output = '/Users/fanweikong/Downloads/geomTestLocalSmooth.vtk'
-    Repository.WriteVtkPolyData('smth2', 'ascii', output)
+    # set sphere constrain args: name , dst_name, radius, center, array name, datatype(0=point, 1=cell)
+    Geom.Set_array_for_local_op_sphere('poly3', 'smth', 3, [0,0,0],'LocalOpsArray', 0)
+    Geom.Set_array_for_local_op_sphere('smth', 'smth2', 3, [0,0,0],'LocalOpsArray', 1)
+    # check arrays on surfaces 
+    Repository.WriteVtkPolyData('smth2', 'ascii', output_1)
+    # local constrained smoothing: name, dst_name, iter, relax_factor, numcgsolves, pt array name, cell array name
+    Geom.Local_constrain_smooth('smth2', 'smth3', 5, 0.8, 30, 'LocalOpsArray','LocalOpsArray')
+    output = os.path.join(out_dir, 'geom_test_local_smooth.vtk')
+    Repository.WriteVtkPolyData('smth3', 'ascii', output)
 
 
 if __name__ == '__main__':
